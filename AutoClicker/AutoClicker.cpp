@@ -59,6 +59,13 @@ void AutoClicker::ClearPoints ()
 	positions.clear ();
 }
 
+void AutoClicker::ChangeInterval ()
+{
+	std::cout << "Enter new clickInterval value (ms) : ";
+	std::cin >> clickInterval;
+	std::cout << "\nNew clicking interval is set value : " << clickInterval << "\n";
+}
+
 
 bool AutoClicker::IsAlive () const
 {
@@ -119,6 +126,9 @@ void AutoClicker::HandleEvents ()
 				case HOTKEYS::RESET:
 					ClearPoints ();
 					break;
+				case HOTKEYS::CHANGEINTERVAL:
+					ChangeInterval ();
+					break;
 				case HOTKEYS::EXIT:
 					Stop ();
 					alive = false;
@@ -135,4 +145,5 @@ void AutoClicker::SetupHotkeys ()
 	RegisterHotKey (nullptr, HOTKEYS::ADDPOINT, MOD_ALT | MOD_NOREPEAT, HOTKEYS::ADDPOINT);
 	RegisterHotKey (nullptr, HOTKEYS::RESET, MOD_ALT | MOD_NOREPEAT, HOTKEYS::RESET);
 	RegisterHotKey (nullptr, HOTKEYS::EXIT, MOD_NOREPEAT, HOTKEYS::EXIT);
+	RegisterHotKey (nullptr, HOTKEYS::CHANGEINTERVAL, MOD_ALT | MOD_NOREPEAT, HOTKEYS::CHANGEINTERVAL);
 }

@@ -16,6 +16,8 @@ Usage:
 		Note: you can add more points and the clicker will click them in the given sequence
 	alt + C
 		clear points
+	alt + G
+		Set new clicking interval
 	ESCAPE
 		Shuts down the program
 )"""";

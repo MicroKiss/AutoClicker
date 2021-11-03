@@ -17,6 +17,10 @@ Windows only autoclicker only using the WinAPI and std
  
 > clear points
  
+ alt + G
+ 
+> Set new clickInterval
+ 
  ESCAPE
  
 > Shuts down the program

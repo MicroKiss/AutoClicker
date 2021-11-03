@@ -15,6 +15,7 @@ enum HOTKEYS : UINT
 	ADDPOINT = int ('D'), //+alt
 	RESET = int ('C'), //+alt
 	EXIT = VK_ESCAPE,
+	CHANGEINTERVAL = int ('G'), //+alt
 };
 
 
@@ -29,6 +30,7 @@ public:
 	void AddPoint (const POINT& pos);
 	void AddCurrentPoint ();
 	void ClearPoints ();
+	void ChangeInterval ();
 	bool IsAlive () const;
 	std::vector<POINT> positions;
 	void MainLoop ();
