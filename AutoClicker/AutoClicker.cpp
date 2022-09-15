@@ -96,10 +96,14 @@ void AutoClicker::Run ()
 			if (positions.empty ())
 				cursor.LeftClick ();
 			else {
+				if (true) {
+					cursor.ClickAndDrag (positions[0], positions[1]);
+				} else {
 				POINT lastLocation = cursor.GetPosition ();
 				cursor.LeftClick (positions[positionIndex]);
 				positionIndex = (positionIndex + 1) % positions.size ();
 				cursor.SetPosition (lastLocation);
+				}
 			}
 		}
 	}
