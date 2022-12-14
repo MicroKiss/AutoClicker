@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "Cursor.h"
+#include "Keyboard.h"
 
 
 
@@ -19,11 +20,11 @@ enum HOTKEYS : UINT
 };
 
 
-class AutoClicker
+class InputBot
 {
 public:
-	AutoClicker ();
-	virtual ~AutoClicker ();
+	InputBot ();
+	virtual ~InputBot ();
 	void StartButton ();
 	void Start ();
 	void Stop ();
@@ -41,6 +42,7 @@ private:
 	void HandleEvents ();
 	void SetupHotkeys ();
 	Cursor cursor;
+	Keyboard keyboard;
 	double lastTick; //ms
 	double clickInterval;
 	bool alive;

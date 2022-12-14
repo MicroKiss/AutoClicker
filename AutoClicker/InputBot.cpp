@@ -1,20 +1,20 @@
-#include "AutoClicker.h"
+#include "InputBot.h"
 
-AutoClicker::AutoClicker ()
+InputBot::InputBot ()
 {
 	alive = true;
 	started = false;
 	SetupHotkeys ();
 	lastTick = GetTickCount64 ();
-	clickInterval = 1000;
+	clickInterval = 1000.;
 }
 
 
-AutoClicker::~AutoClicker ()
+InputBot::~InputBot ()
 {
 }
 
-void AutoClicker::StartButton ()
+void InputBot::StartButton ()
 {
 	if (started)
 		Stop ();
@@ -23,7 +23,7 @@ void AutoClicker::StartButton ()
 }
 
 
-void AutoClicker::Start ()
+void InputBot::Start ()
 {
 	std::cout << "Started\n";
 	positionIndex = 0;
@@ -32,34 +32,34 @@ void AutoClicker::Start ()
 }
 
 
-void AutoClicker::Stop ()
+void InputBot::Stop ()
 {
 	std::cout << "Stopped\n";
 	started = false;
 }
 
 
-void AutoClicker::AddPoint (const POINT& pos)
+void InputBot::AddPoint (const POINT& pos)
 {
 	std::cout << "point added" << pos.x << " " << pos.y << "\n";
 	positions.push_back (pos);
 }
 
 
-void AutoClicker::AddCurrentPoint ()
+void InputBot::AddCurrentPoint ()
 {
 	AddPoint (cursor.GetPosition ());
 }
 
 
-void AutoClicker::ClearPoints ()
+void InputBot::ClearPoints ()
 {
 	std::cout << "points cleared\n";
 	Stop ();
 	positions.clear ();
 }
 
-void AutoClicker::ChangeInterval ()
+void InputBot::ChangeInterval ()
 {
 	std::cout << "Enter new clickInterval value (ms) : ";
 	std::cin >> clickInterval;
@@ -67,13 +67,13 @@ void AutoClicker::ChangeInterval ()
 }
 
 
-bool AutoClicker::IsAlive () const
+bool InputBot::IsAlive () const
 {
 	return alive;
 }
 
 
-void AutoClicker::MainLoop ()
+void InputBot::MainLoop ()
 {
 	while (IsAlive ()) {
 		HandleEvents ();
@@ -82,55 +82,39 @@ void AutoClicker::MainLoop ()
 }
 
 
-double AutoClicker::GetElapsedTime () const
+double InputBot::GetElapsedTime () const
 {
 	return GetTickCount64 () - lastTick;
 }
 
 
-void AutoClicker::Run ()
+void InputBot::Run ()
 {
 	if (started) {
-		INPUT inputs[4] = {};
-		ZeroMemory (inputs, sizeof (inputs));
+		// example keyboard event
+		////std::vector<WORD> keyInputs = {VK_RIGHT,VK_LEFT};
+		////keyboard.PressKeysAtOnce (keyInputs);
+		//keyboard.PressKey ('A');
+		//Sleep (100);
 
-		inputs[0].type = INPUT_KEYBOARD;
-		inputs[0].ki.wVk = 'A';
-
-		inputs[1].type = INPUT_KEYBOARD;
-		inputs[1].ki.wVk = 'D';
-
-		inputs[2].type = INPUT_KEYBOARD;
-		inputs[2].ki.wVk = 'A';
-		inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
-
-		inputs[3].type = INPUT_KEYBOARD;
-		inputs[3].ki.wVk = 'D';
-		inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
-
-		UINT uSent = SendInput (ARRAYSIZE (inputs), inputs, sizeof (INPUT));
-		Sleep (10);
-		return;
+		//return;
+		
 		if (GetElapsedTime () > clickInterval) {
 			lastTick = GetTickCount64 ();
-			if (positions.empty ())
+			if (positions.empty ()) { // click at mouse position
 				cursor.LeftClick ();
-			else {
-				if (false) {
-					cursor.ClickAndDrag (positions[0], positions[1]);
-				} else {
+			} else {
 				POINT lastLocation = cursor.GetPosition ();
 				cursor.LeftClick (positions[positionIndex]);
 				positionIndex = (positionIndex + 1) % positions.size ();
 				cursor.SetPosition (lastLocation);
-				}
 			}
 		}
 	}
 }
 
 
-void AutoClicker::HandleEvents ()
+void InputBot::HandleEvents ()
 {
 	MSG msg;
 	while (PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) { //get only the keyboard messages
@@ -142,28 +126,28 @@ void AutoClicker::HandleEvents ()
 		if (msg.message == WM_HOTKEY) {
 			switch (msg.wParam) {
 				case HOTKEYS::START:
-					StartButton ();
-					break;
+				StartButton ();
+				break;
 				case HOTKEYS::ADDPOINT:
-					AddCurrentPoint ();
-					break;
+				AddCurrentPoint ();
+				break;
 				case HOTKEYS::RESET:
-					ClearPoints ();
-					break;
+				ClearPoints ();
+				break;
 				case HOTKEYS::CHANGEINTERVAL:
-					ChangeInterval ();
-					break;
+				ChangeInterval ();
+				break;
 				case HOTKEYS::EXIT:
-					Stop ();
-					alive = false;
-					break;
+				Stop ();
+				alive = false;
+				break;
 			}
 		}
 	}
 }
 
 
-void AutoClicker::SetupHotkeys ()
+void InputBot::SetupHotkeys ()
 {
 	RegisterHotKey (nullptr, HOTKEYS::START, MOD_NOREPEAT, HOTKEYS::START);
 	RegisterHotKey (nullptr, HOTKEYS::ADDPOINT, MOD_ALT | MOD_NOREPEAT, HOTKEYS::ADDPOINT);

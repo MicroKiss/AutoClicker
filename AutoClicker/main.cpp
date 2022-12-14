@@ -1,5 +1,5 @@
 #include <iostream>
-#include "AutoClicker.h"
+#include "InputBot.h"
 #include <iostream>
 
 
@@ -7,7 +7,7 @@
 void WriteHelp ()
 {
 	std::cout << R""""(
-	Welcome to MicroKiss's AutoClicker.
+	Welcome to MicroKiss's InputBot.
 Usage: 
 	F9 
 		To start, it will automatically click every interval in your all time mouse position
@@ -38,10 +38,10 @@ void WriteGoodbye ()
 )"""";
 }
 
-int main()
+int main ()
 {
 	WriteHelp ();
-    AutoClicker AC;
-	AC.MainLoop ();
+	InputBot IB;
+	IB.MainLoop ();
 	WriteGoodbye ();
 }
