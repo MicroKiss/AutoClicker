@@ -91,12 +91,32 @@ double AutoClicker::GetElapsedTime () const
 void AutoClicker::Run ()
 {
 	if (started) {
+		INPUT inputs[4] = {};
+		ZeroMemory (inputs, sizeof (inputs));
+
+		inputs[0].type = INPUT_KEYBOARD;
+		inputs[0].ki.wVk = 'A';
+
+		inputs[1].type = INPUT_KEYBOARD;
+		inputs[1].ki.wVk = 'D';
+
+		inputs[2].type = INPUT_KEYBOARD;
+		inputs[2].ki.wVk = 'A';
+		inputs[2].ki.dwFlags = KEYEVENTF_KEYUP;
+
+		inputs[3].type = INPUT_KEYBOARD;
+		inputs[3].ki.wVk = 'D';
+		inputs[3].ki.dwFlags = KEYEVENTF_KEYUP;
+
+		UINT uSent = SendInput (ARRAYSIZE (inputs), inputs, sizeof (INPUT));
+		Sleep (10);
+		return;
 		if (GetElapsedTime () > clickInterval) {
 			lastTick = GetTickCount64 ();
 			if (positions.empty ())
 				cursor.LeftClick ();
 			else {
-				if (true) {
+				if (false) {
 					cursor.ClickAndDrag (positions[0], positions[1]);
 				} else {
 				POINT lastLocation = cursor.GetPosition ();
