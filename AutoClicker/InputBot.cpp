@@ -106,6 +106,7 @@ void InputBot::Run ()
 			} else {
 				POINT lastLocation = cursor.GetPosition ();
 				cursor.LeftClick (positions[positionIndex]);
+				//cursor.ClickAndDrag (lastLocation, positions[positionIndex]);
 				positionIndex = (positionIndex + 1) % positions.size ();
 				cursor.SetPosition (lastLocation);
 			}
