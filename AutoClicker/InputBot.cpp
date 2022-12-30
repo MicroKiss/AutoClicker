@@ -60,6 +60,7 @@ void InputBot::ClearPoints ()
 	positions.clear ();
 }
 
+
 void InputBot::ChangeInterval ()
 {
 	std::cout << "Enter new clickInterval value (ms) : ";
@@ -113,12 +114,29 @@ void InputBot::Run ()
 			} else {
 				POINT lastLocation = cursor.GetPosition ();
 				cursor.LeftClick (positions[positionIndex]);
-				//cursor.ClickAndDrag (lastLocation, positions[positionIndex]);
+				//Drag (lastLocation, positions[positionIndex]);
 				positionIndex = (positionIndex + 1) % positions.size ();
 				cursor.SetPosition (lastLocation);
 			}
 		}
 	}
+}
+
+
+void InputBot::Drag (POINT const& pos1, POINT const& pos2, DWORD const interval /*1000*/, unsigned int const parts /*50*/)
+{
+	float xDif = pos2.x - pos1.x;
+	float yDif = pos2.y - pos1.y;
+
+	cursor.SetPosition (pos1);
+	cursor.LeftDown ();
+
+	for (unsigned int i = 0; i < parts; ++i) {
+		cursor.SetPosition ({long (pos1.x + xDif / parts * i), long (pos1.y + yDif / parts * i)});
+		Sleep (interval / parts);
+	}
+
+	cursor.LeftUp ();
 }
 
 

@@ -7,9 +7,6 @@
 #include "Cursor.h"
 #include "Keyboard.h"
 
-
-
-
 enum HOTKEYS : UINT
 {
 	START = VK_F9,
@@ -36,9 +33,10 @@ public:
 	std::vector<POINT> positions;
 	void MainLoop ();
 	double GetElapsedTime () const;
-private:
 
+private:
 	void Run ();
+	void Drag (POINT const& pos1, POINT const& pos2, DWORD const interval = 1000, unsigned int const parts = 50);
 	void DrawCircle (const POINT& pos, double r, size_t sections = 100, unsigned long period = 0);
 	void HandleEvents ();
 	void SetupHotkeys ();

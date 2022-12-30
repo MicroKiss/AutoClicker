@@ -29,6 +29,7 @@ void Cursor::RightDown ()
 	SendInput (1, &input, sizeof (INPUT));
 }
 
+
 void Cursor::RightUp ()
 {
 	INPUT input = {};
@@ -39,22 +40,6 @@ void Cursor::RightUp ()
 }
 
 
-void Cursor::ClickAndDrag (POINT const& pos1, POINT const& pos2, DWORD const interval, unsigned int const parts)
-{
-	float xDif = pos2.x - pos1.x;
-	float yDif = pos2.y - pos1.y;
-
-	SetPosition (pos1);
-	LeftDown ();
-
-	for (unsigned int i = 0; i < parts; ++i) {
-		SetPosition ({long (pos1.x + xDif / parts * i), long (pos1.y + yDif / parts * i)});
-		Sleep (interval / parts);
-	}
-
-	LeftUp ();
-}
-
 void Cursor::LeftUp ()
 {
 	INPUT input = {};
@@ -63,6 +48,7 @@ void Cursor::LeftUp ()
 
 	SendInput (1, &input, sizeof (INPUT));
 }
+
 
 void Cursor::LeftDown ()
 {

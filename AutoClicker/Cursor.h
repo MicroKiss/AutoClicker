@@ -2,7 +2,6 @@
 
 #include <windows.h>
 
-
 class Cursor
 {
 public:

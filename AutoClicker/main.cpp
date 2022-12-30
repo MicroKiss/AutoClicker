@@ -2,8 +2,6 @@
 #include "InputBot.h"
 #include <iostream>
 
-
-
 void WriteHelp ()
 {
 	std::cout << R""""(
@@ -22,6 +20,8 @@ Usage:
 		Shuts down the program
 )"""";
 }
+
+
 void WriteGoodbye ()
 {
 	std::cout << R""""(
@@ -37,6 +37,7 @@ void WriteGoodbye ()
  `-:;.-'
 )"""";
 }
+
 
 int main ()
 {
