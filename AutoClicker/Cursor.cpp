@@ -3,7 +3,14 @@
 
 void Cursor::SetPosition (const POINT& pos)
 {
-	SetCursorPos (pos.x, pos.y);
+	LONG x = pos.x * (65536.0f / GetSystemMetrics (SM_CXSCREEN));
+	LONG y = pos.y * (65536.0f / GetSystemMetrics (SM_CYSCREEN));
+	INPUT Input = {};
+	Input.type = INPUT_MOUSE;
+	Input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+	Input.mi.dx = x;
+	Input.mi.dy = y;
+	SendInput (1, &Input, sizeof (INPUT));
 }
 
 

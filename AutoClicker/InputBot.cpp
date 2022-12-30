@@ -1,4 +1,5 @@
 #include "InputBot.h"
+#include <math.h>
 
 InputBot::InputBot ()
 {
@@ -41,7 +42,7 @@ void InputBot::Stop ()
 
 void InputBot::AddPoint (const POINT& pos)
 {
-	std::cout << "point added" << pos.x << " " << pos.y << "\n";
+	std::cout << "point added: x: " << pos.x << " y: " << pos.y << "\n";
 	positions.push_back (pos);
 }
 
@@ -98,7 +99,13 @@ void InputBot::Run ()
 		//Sleep (100);
 
 		//return;
-		
+		if (false){
+			DrawCircle (cursor.GetPosition (), 100);
+			started = false;
+			return;
+		}
+
+		POINT lastLocation = cursor.GetPosition ();
 		if (GetElapsedTime () > clickInterval) {
 			lastTick = GetTickCount64 ();
 			if (positions.empty ()) { // click at mouse position
@@ -112,6 +119,29 @@ void InputBot::Run ()
 			}
 		}
 	}
+}
+
+
+void InputBot::DrawCircle (const POINT& pos, double r,size_t sections /* 100 */, unsigned long period /* =0 */)
+{
+	static const double PI = 3.141593;
+	POINT lastLocation = cursor.GetPosition ();
+
+	auto GetCirclePoint = [pos, r](double part)-> POINT {
+		return {long (pos.x + r * cos (part)), long (pos.y + r * sin (part))};
+	};
+
+	cursor.SetPosition (GetCirclePoint (0));
+	cursor.LeftDown ();
+
+	for (unsigned int i = 0; i < sections + 1; ++i) {
+		cursor.SetPosition (GetCirclePoint (2*PI*i / sections));
+		Sleep (period/ sections);
+	}
+
+	cursor.LeftUp ();
+	cursor.SetPosition (lastLocation);
+	
 }
 
 

@@ -39,6 +39,7 @@ public:
 private:
 
 	void Run ();
+	void DrawCircle (const POINT& pos, double r, size_t sections = 100, unsigned long period = 0);
 	void HandleEvents ();
 	void SetupHotkeys ();
 	Cursor cursor;
