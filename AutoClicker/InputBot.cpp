@@ -78,8 +78,11 @@ bool InputBot::IsAlive () const
 void InputBot::MainLoop ()
 {
 	while (IsAlive ()) {
-		HandleEvents ();
-		Run ();
+		if (started) {
+			Run ();
+		} else {
+			HandleEvents ();
+		}
 	}
 }
 
@@ -92,17 +95,25 @@ double InputBot::GetElapsedTime () const
 
 void InputBot::Run ()
 {
-	if (started) {
-		// example keyboard event
-		////std::vector<WORD> keyInputs = {VK_RIGHT,VK_LEFT};
-		////keyboard.PressKeysAtOnce (keyInputs);
-		//keyboard.PressKey ('A');
-		//Sleep (100);
+		if (true) {
+			std::cout << "here\n";
+			//example keyboard event
+			std::vector<WORD> keyInputs = {VK_LWIN,'R'};
+			keyboard.PressKeysAtOnce (keyInputs);
+			Sleep (200);
+			keyboard.Type ("notepad");
+			keyboard.PressKey (VK_RETURN);
+			Sleep (200);
+			keyboard.Type (message);
+			keyboard.PressKey (VK_RETURN);
+			Stop ();
 
-		//return;
-		if (false){
+			return;
+		}
+
+		if (false) {
 			DrawCircle (cursor.GetPosition (), 100);
-			started = false;
+			Stop ();
 			return;
 		}
 
@@ -119,7 +130,6 @@ void InputBot::Run ()
 				cursor.SetPosition (lastLocation);
 			}
 		}
-	}
 }
 
 
@@ -140,7 +150,7 @@ void InputBot::Drag (POINT const& pos1, POINT const& pos2, DWORD const interval 
 }
 
 
-void InputBot::DrawCircle (const POINT& pos, double r,size_t sections /* 100 */, unsigned long period /* =0 */)
+void InputBot::DrawCircle (const POINT& pos, double r, size_t sections /* 100 */, unsigned long period /* =0 */)
 {
 	static const double PI = 3.141593;
 	POINT lastLocation = cursor.GetPosition ();
@@ -153,43 +163,49 @@ void InputBot::DrawCircle (const POINT& pos, double r,size_t sections /* 100 */,
 	cursor.LeftDown ();
 
 	for (unsigned int i = 0; i < sections + 1; ++i) {
-		cursor.SetPosition (GetCirclePoint (2*PI*i / sections));
-		Sleep (period/ sections);
+		cursor.SetPosition (GetCirclePoint (2 * PI * i / sections));
+		Sleep (period / sections);
 	}
 
 	cursor.LeftUp ();
 	cursor.SetPosition (lastLocation);
-	
+
+}
+
+
+void InputBot::RecordMessage ()
+{
+	std::cout << "type your one line message:\n";
+	std::cin >> message;
+	std::cout << "your message is set to: " << message << '\n';
 }
 
 
 void InputBot::HandleEvents ()
 {
 	MSG msg;
-	while (PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) { //get only the keyboard messages
-		if (msg.message == WM_TIMER) {
-			break;
-		}
-		TranslateMessage (&msg); // translates virtual-key codes 
-		DispatchMessage (&msg);  // dispatches message to window 
+	if (GetMessage (&msg, nullptr, 0, 0) != 0) { 
 		if (msg.message == WM_HOTKEY) {
 			switch (msg.wParam) {
-				case HOTKEYS::START:
-				StartButton ();
-				break;
-				case HOTKEYS::ADDPOINT:
-				AddCurrentPoint ();
-				break;
-				case HOTKEYS::RESET:
-				ClearPoints ();
-				break;
-				case HOTKEYS::CHANGEINTERVAL:
-				ChangeInterval ();
-				break;
-				case HOTKEYS::EXIT:
-				Stop ();
-				alive = false;
-				break;
+				case START:
+					StartButton ();
+					break;
+				case ADDPOINT:
+					AddCurrentPoint ();
+					break;
+				case RESET:
+					ClearPoints ();
+					break;
+				case CHANGEINTERVAL:
+					ChangeInterval ();
+					break;
+				case RECORDMESSAGE:
+					RecordMessage ();
+					break;
+				case EXIT:
+					Stop ();
+					alive = false;
+					break;
 			}
 		}
 	}
@@ -198,9 +214,10 @@ void InputBot::HandleEvents ()
 
 void InputBot::SetupHotkeys ()
 {
-	RegisterHotKey (nullptr, HOTKEYS::START, MOD_NOREPEAT, HOTKEYS::START);
-	RegisterHotKey (nullptr, HOTKEYS::ADDPOINT, MOD_ALT | MOD_NOREPEAT, HOTKEYS::ADDPOINT);
-	RegisterHotKey (nullptr, HOTKEYS::RESET, MOD_ALT | MOD_NOREPEAT, HOTKEYS::RESET);
-	RegisterHotKey (nullptr, HOTKEYS::EXIT, MOD_NOREPEAT, HOTKEYS::EXIT);
-	RegisterHotKey (nullptr, HOTKEYS::CHANGEINTERVAL, MOD_ALT | MOD_NOREPEAT, HOTKEYS::CHANGEINTERVAL);
+	RegisterHotKey (nullptr, START, MOD_CONTROL | MOD_NOREPEAT, VK_F9);
+	RegisterHotKey (nullptr, ADDPOINT, MOD_CONTROL | MOD_NOREPEAT, 'D');
+	RegisterHotKey (nullptr, RESET, MOD_CONTROL | MOD_NOREPEAT, 'C');
+	RegisterHotKey (nullptr, EXIT, MOD_CONTROL | MOD_NOREPEAT, VK_ESCAPE);
+	RegisterHotKey (nullptr, CHANGEINTERVAL, MOD_CONTROL | MOD_NOREPEAT, 'G');
+	RegisterHotKey (nullptr, RECORDMESSAGE, MOD_CONTROL | MOD_NOREPEAT, 'R');
 }

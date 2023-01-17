@@ -28,35 +28,6 @@ void Keyboard::PressKeysAtOnce (std::vector<WORD> const& keys)
 }
 
 
-//maybe these are needed for apps to catch the event ?
-//UINT PressKeyScan (WORD scanCode)
-//{
-//	INPUT input[1] = {0};
-//	input[0].type = INPUT_KEYBOARD;
-//	input[0].ki.wVk = NULL;
-//	input[0].ki.wScan = scanCode;
-//	input[0].ki.dwFlags = KEYEVENTF_SCANCODE;
-//
-//	UINT ret = SendInput (1, input, sizeof (INPUT));
-//
-//	return ret;
-//}
-//
-//UINT ReleaseKeyScan (WORD scanCode)
-//{
-//	INPUT input[1] = {0};
-//	input[0].type = INPUT_KEYBOARD;
-//	input[0].ki.wVk = NULL;
-//	input[0].ki.wScan = scanCode;
-//	input[0].ki.dwFlags = KEYEVENTF_SCANCODE | KEYEVENTF_KEYUP;
-//
-//
-//	UINT ret = SendInput (1, input, sizeof (INPUT));
-//
-//	return ret;
-//}
-
-
 void Keyboard::PressKey (WORD const& key)
 {
 	INPUT inputs[2] = {};
@@ -73,6 +44,14 @@ void Keyboard::PressKey (WORD const& key)
 		throw;
 	}
 }
+
+void Keyboard::Type (std::string str)
+{
+	for (auto& c : str) {
+		PressKey (std::toupper (c));
+	}
+}
+
 
 
 void Keyboard::HoldKey (WORD const& key, DWORD const& duration)

@@ -7,13 +7,14 @@
 #include "Cursor.h"
 #include "Keyboard.h"
 
-enum HOTKEYS : UINT
+enum HOTKEYS
 {
-	START = VK_F9,
-	ADDPOINT = int ('D'), //+alt
-	RESET = int ('C'), //+alt
-	EXIT = VK_ESCAPE,
-	CHANGEINTERVAL = int ('G'), //+alt
+	START ,
+	ADDPOINT,
+	RESET,
+	EXIT ,
+	CHANGEINTERVAL,
+	RECORDMESSAGE
 };
 
 
@@ -29,6 +30,7 @@ public:
 	void AddCurrentPoint ();
 	void ClearPoints ();
 	void ChangeInterval ();
+	void RecordMessage ();
 	bool IsAlive () const;
 	std::vector<POINT> positions;
 	void MainLoop ();
@@ -47,5 +49,6 @@ private:
 	bool alive;
 	bool started;
 	u_int positionIndex;
+	std::string message;
 };
 
