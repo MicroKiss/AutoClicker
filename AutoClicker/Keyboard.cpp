@@ -1,4 +1,5 @@
 #include "Keyboard.h"
+#include <iostream>
 
 void Keyboard::PressKeysAtOnce (std::vector<WORD> const& keys)
 {
@@ -45,8 +46,10 @@ void Keyboard::PressKey (WORD const& key)
 	}
 }
 
+
 void Keyboard::Type (std::string str)
 {
+	std::cout <<"wrtiring: " << str;
 	for (auto& c : str) {
 		PressKey (std::toupper (c));
 	}

@@ -9,12 +9,12 @@ void WriteHelp ()
 Usage: 
 	F9 
 		To start, it will automatically click every interval in your all time mouse position
-	alt + D
+	ctrl + D
 		To add a point where the autoclicker should click instead of your all time current  mouse pos
 		Note: you can add more points and the clicker will click them in the given sequence
-	alt + C
+	ctrl + C
 		clear points
-	alt + G
+	ctrl + G
 		Set new clicking interval
 	ESCAPE
 		Shuts down the program

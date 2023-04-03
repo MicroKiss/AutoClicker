@@ -3,18 +3,21 @@
 #include <chrono>
 #include <vector>
 #include <iostream>
+#include <thread>
 
 #include "Cursor.h"
 #include "Keyboard.h"
+#include "Action.h"
 
 enum HOTKEYS
 {
-	START ,
-	ADDPOINT,
+	START,
+	ADDLEFTCLICK,
+	ADDRIGHTCLICK,
+	ADDMESSAGE,
 	RESET,
 	EXIT ,
-	CHANGEINTERVAL,
-	RECORDMESSAGE
+	CHANGEINTERVAL
 };
 
 
@@ -26,13 +29,10 @@ public:
 	void StartButton ();
 	void Start ();
 	void Stop ();
-	void AddPoint (const POINT& pos);
-	void AddCurrentPoint ();
 	void ClearPoints ();
 	void ChangeInterval ();
-	void RecordMessage ();
 	bool IsAlive () const;
-	std::vector<POINT> positions;
+	std::vector<Action> actions;
 	void MainLoop ();
 	double GetElapsedTime () const;
 
@@ -41,6 +41,10 @@ private:
 	void Drag (POINT const& pos1, POINT const& pos2, DWORD const interval = 1000, unsigned int const parts = 50);
 	void DrawCircle (const POINT& pos, double r, size_t sections = 100, unsigned long period = 0);
 	void HandleEvents ();
+	void HandleAction (Action const& action);
+	void AddLeftClick ();
+	void AddMessageWrite ();
+	void AddRightClick ();
 	void SetupHotkeys ();
 	Cursor cursor;
 	Keyboard keyboard;
@@ -49,6 +53,5 @@ private:
 	bool alive;
 	bool started;
 	u_int positionIndex;
-	std::string message;
 };
 

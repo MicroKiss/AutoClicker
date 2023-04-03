@@ -40,24 +40,11 @@ void InputBot::Stop ()
 }
 
 
-void InputBot::AddPoint (const POINT& pos)
-{
-	std::cout << "point added: x: " << pos.x << " y: " << pos.y << "\n";
-	positions.push_back (pos);
-}
-
-
-void InputBot::AddCurrentPoint ()
-{
-	AddPoint (cursor.GetPosition ());
-}
-
-
 void InputBot::ClearPoints ()
 {
-	std::cout << "points cleared\n";
 	Stop ();
-	positions.clear ();
+	actions.clear ();
+	std::cout << "actions cleared\n";
 }
 
 
@@ -78,11 +65,9 @@ bool InputBot::IsAlive () const
 void InputBot::MainLoop ()
 {
 	while (IsAlive ()) {
-		if (started) {
+		HandleEvents ();
+		if (started)
 			Run ();
-		} else {
-			HandleEvents ();
-		}
 	}
 }
 
@@ -95,7 +80,7 @@ double InputBot::GetElapsedTime () const
 
 void InputBot::Run ()
 {
-		if (true) {
+		if (false) {
 			std::cout << "here\n";
 			//example keyboard event
 			std::vector<WORD> keyInputs = {VK_LWIN,'R'};
@@ -104,10 +89,9 @@ void InputBot::Run ()
 			keyboard.Type ("notepad");
 			keyboard.PressKey (VK_RETURN);
 			Sleep (200);
-			keyboard.Type (message);
+			keyboard.Type ("almafa");
 			keyboard.PressKey (VK_RETURN);
 			Stop ();
-
 			return;
 		}
 
@@ -120,16 +104,36 @@ void InputBot::Run ()
 		POINT lastLocation = cursor.GetPosition ();
 		if (GetElapsedTime () > clickInterval) {
 			lastTick = GetTickCount64 ();
-			if (positions.empty ()) { // click at mouse position
+			if (actions.empty ()) { // click at mouse position
 				cursor.LeftClick ();
 			} else {
-				POINT lastLocation = cursor.GetPosition ();
-				cursor.LeftClick (positions[positionIndex]);
-				//Drag (lastLocation, positions[positionIndex]);
-				positionIndex = (positionIndex + 1) % positions.size ();
-				cursor.SetPosition (lastLocation);
+				//POINT lastLocation = cursor.GetPosition ();
+				HandleAction (actions[positionIndex]);
+				//cursor.LeftClick ();
+				//Drag (lastLocation, actions[positionIndex]);
+				positionIndex = (positionIndex + 1) % actions.size ();
+				//cursor.SetPosition (lastLocation);
 			}
 		}
+}
+
+void InputBot::HandleAction (Action const& action)
+{
+	switch (action.type) {
+		case LeftClick:
+			cursor.SetPosition ({action.data[0], action.data[1]});
+			cursor.LeftClick (); 
+			break;
+		case RightClick:
+			cursor.SetPosition ({action.data[0], action.data[1]});
+			cursor.RightClick ();
+			break;
+		case Write:
+			keyboard.Type (std::string (action.data.begin (), action.data.end ()));
+			break;
+		default:
+			break;
+	}
 }
 
 
@@ -173,25 +177,57 @@ void InputBot::DrawCircle (const POINT& pos, double r, size_t sections /* 100 */
 }
 
 
-void InputBot::RecordMessage ()
+void InputBot::AddLeftClick ()
 {
-	std::cout << "type your one line message:\n";
+	POINT cursorPosition = cursor.GetPosition ();
+	Action action;
+	action.type = LeftClick;
+	action.data = {cursorPosition.x, cursorPosition.y};
+	actions.push_back (action);
+	std::cout << "added LeftClick action: " << cursorPosition.x << " " << cursorPosition.y << "\n";
+}
+
+
+void InputBot::AddRightClick ()
+{
+	POINT cursorPosition = cursor.GetPosition ();
+	Action action;
+	action.type = RightClick;
+	action.data = {cursorPosition.x, cursorPosition.y};
+	actions.push_back (action);
+	std::cout << "added RightClick action: " << cursorPosition.x << " " << cursorPosition.y << "\n";
+}
+
+
+void InputBot::AddMessageWrite ()
+{
+	std::string message;
 	std::cin >> message;
-	std::cout << "your message is set to: " << message << '\n';
+	Action action;
+	action.type = Write;
+	for (auto& c : message) {
+		action.data.push_back (c);
+	}
+	actions.push_back (action);
+	std::cout << "added Write action: " << message << '\n';
 }
 
 
 void InputBot::HandleEvents ()
 {
 	MSG msg;
-	if (GetMessage (&msg, nullptr, 0, 0) != 0) { 
+	//PeekMessage doesn't block the thread
+	if (PeekMessage (&msg, nullptr, 0, 0, PM_REMOVE)) { 
 		if (msg.message == WM_HOTKEY) {
 			switch (msg.wParam) {
 				case START:
 					StartButton ();
 					break;
-				case ADDPOINT:
-					AddCurrentPoint ();
+				case ADDLEFTCLICK:
+					AddLeftClick ();
+					break;
+				case ADDRIGHTCLICK:
+					AddRightClick ();
 					break;
 				case RESET:
 					ClearPoints ();
@@ -199,8 +235,8 @@ void InputBot::HandleEvents ()
 				case CHANGEINTERVAL:
 					ChangeInterval ();
 					break;
-				case RECORDMESSAGE:
-					RecordMessage ();
+				case ADDMESSAGE:
+					AddMessageWrite ();
 					break;
 				case EXIT:
 					Stop ();
@@ -214,10 +250,11 @@ void InputBot::HandleEvents ()
 
 void InputBot::SetupHotkeys ()
 {
-	RegisterHotKey (nullptr, START, MOD_CONTROL | MOD_NOREPEAT, VK_F9);
-	RegisterHotKey (nullptr, ADDPOINT, MOD_CONTROL | MOD_NOREPEAT, 'D');
+	RegisterHotKey (nullptr, START, MOD_NOREPEAT, VK_F9);
+	RegisterHotKey (nullptr, ADDLEFTCLICK, MOD_CONTROL | MOD_NOREPEAT, 'D');
+	RegisterHotKey (nullptr, ADDRIGHTCLICK, MOD_CONTROL | MOD_NOREPEAT, 'F');
 	RegisterHotKey (nullptr, RESET, MOD_CONTROL | MOD_NOREPEAT, 'C');
 	RegisterHotKey (nullptr, EXIT, MOD_CONTROL | MOD_NOREPEAT, VK_ESCAPE);
 	RegisterHotKey (nullptr, CHANGEINTERVAL, MOD_CONTROL | MOD_NOREPEAT, 'G');
-	RegisterHotKey (nullptr, RECORDMESSAGE, MOD_CONTROL | MOD_NOREPEAT, 'R');
+	RegisterHotKey (nullptr, ADDMESSAGE, MOD_CONTROL | MOD_NOREPEAT, 'R');
 }
